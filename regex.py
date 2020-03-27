@@ -6,7 +6,8 @@ class State:
     """A state with one or two edges, all edges have a label."""
 
     def __init__(self, label=None, edges=[]):
-        self.edges = edges  # every state has 0, 1 or 2 edges from it
+        # every state has 0, 1 or 2 edges from it
+        self.edges = edges if edges else [] 
         self.label = label  # label for the arrows (null = epsilon)
 
 
@@ -135,16 +136,5 @@ def match(regex, s):
 
 
 if __name__ == "__main__":
-    tests = [
-        ["a.b|b*", "bbbbb", True],
-        ["a.b|b*", "bbbbx", False],
-        ["a.b", "ab", True],
-        ["b**", "b", True],
-        ["b*", "", True]
-    ]
-
-    for test in tests:
-        assert match(test[0], test[1]) == test[2], test[0] + ("should" if test[2] else "should not") + "match" + test[1]
-
-
+    print match("a.b.b.c*", "abc")
 
