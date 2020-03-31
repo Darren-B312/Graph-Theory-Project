@@ -7,7 +7,7 @@ class State:
 
     def __init__(self, label=None, edges=[]):
         # every state has 0, 1 or 2 edges from it
-        self.edges = edges if edges else [] 
+        self.edges = edges if edges else []
         self.label = label  # label for the arrows (null = epsilon)
 
 
@@ -115,6 +115,8 @@ def match(regex, s):
     """This function will return true if and only if
         the regular regex (fully) matches the string s"""
 
+    regex = concat(regex)
+
     nfa = compile_nfa(regex)  # compile the regular expression into NFA
 
     # two sets of states, current and previous
@@ -130,11 +132,33 @@ def match(regex, s):
                 # if the label of the state is equal to the character read
                 if state.label == c:
                     # add the state(s) at the end of the arrow to current
-                    follow_e(state.edges[0], current)
+                    follow_e(state.edges[0],
+                             current)
 
     return nfa.accept in current  # does NFA match the string s
 
 
-if __name__ == "__main__":
-    print match("a.b.b.c*", "abc")
+def concat(s):
+    input_list = list(s)[::-1]
+    special_characters = ['*', '|', ')']
+    output_list = []
 
+    while input_list:
+        c = input_list.pop()
+
+        if len(output_list) == 0:
+            output_list.append(c)
+        elif c in special_characters or output_list[-1] in special_characters:
+            output_list.append(c)
+        elif output_list[-1] == '(':
+            output_list.append(c)
+        else:
+            output_list.append('.')
+            output_list.append(c)
+
+
+    return output_list
+
+
+if __name__ == "__main__":
+    print(match("d.a.r*.e.n", "darrrrrrrrren"))
