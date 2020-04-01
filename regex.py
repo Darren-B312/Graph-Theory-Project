@@ -4,7 +4,6 @@
 
 class State:
     """A state with one or two edges, all edges have a label."""
-
     def __init__(self, label=None, edges=[]):
         # every state has 0, 1 or 2 edges from it
         self.edges = edges if edges else []
@@ -13,7 +12,6 @@ class State:
 
 class Fragment:
     """An NFA fragment with a start & accept state."""
-
     def __init__(self, start, accept):
         self.start = start  # start state of NFA fragment
         self.accept = accept  # accept state of NFA fragment
@@ -22,7 +20,6 @@ class Fragment:
 def shunt(infix):
     """Return the infix regular expression in postfix."""
     # Convert input to stack-like list
-
     infix = list(infix)[::-1]  # reverse order of list
 
     operators = []  # Operator stack
@@ -59,8 +56,9 @@ def shunt(infix):
 
 def compile_nfa(infix):
     """Return an NFA fragment representing the infix regular expression."""
-
-    postfix = shunt(infix)  # convert infix to postfix
+    #print("DEBUG - infix: " + infix)
+    postfix = shunt(infix)  # convert infix to postfix#
+    #print("DEBUG - postfix: " + postfix)
     postfix = list(postfix)[::-1]  # convert postfix to stack of characters
     nfa_stack = []  # stack for NFA fragments
 
@@ -101,7 +99,6 @@ def compile_nfa(infix):
 def follow_e(state, current):
     """Recursively follow all empty string edges
         until a non null state is found"""
-
     if state not in current:  # only when state has not already been seen
         # add a state to a set and follow all f the e arrows
         current.add(state)
@@ -114,9 +111,7 @@ def follow_e(state, current):
 def match(regex, s):
     """This function will return true if and only if
         the regular regex (fully) matches the string s"""
-
     regex = concat(regex)
-
     nfa = compile_nfa(regex)  # compile the regular expression into NFA
 
     # two sets of states, current and previous
@@ -137,28 +132,42 @@ def match(regex, s):
 
     return nfa.accept in current  # does NFA match the string s
 
-
+#TODO: include reference to documentation which explains this function more
 def concat(s):
-    input_list = list(s)[::-1]
-    special_characters = ['*', '|', ')']
-    output_list = []
+    """This function takes a more user friendly regex (E.g: 'abc'), and
+     inserts '.' concat operators where appropriate (E.g: 'a.b.c')."""
+    my_list = list(s)[::-1]  # convert regex string to a reverse ordered list
+    special_characters = ['*', '|', '(', ')']  # characters with special rules
+    output = []  # the compiler friendly regular expression (E.g: 'a.b.c')
 
-    while input_list:
-        c = input_list.pop()
+    while my_list:  # iterate over the user friendly regex
+        c = my_list.pop()
 
-        if len(output_list) == 0:
-            output_list.append(c)
-        elif c in special_characters or output_list[-1] in special_characters:
-            output_list.append(c)
-        elif output_list[-1] == '(':
-            output_list.append(c)
+        if len(output) == 0:  # always append the first character from the list
+            output.append(c)
+        elif c not in special_characters:  # if c is a normal character
+            # if the previous character is non-special or *
+            if output[-1] not in special_characters or output[-1] == '*':
+                output.append('.')  # preface c with a . operator
+                output.append(c)
+            else:
+                output.append(c)
+        elif c == '*' or c == '|':
+            output.append(c)
+        elif c == '(':
+            if output[-1] != '|' and output[-1] != '(' and output[-1] != '.':
+                output.append('.')
+                output.append(c)
+            else:
+                output.append(c)
         else:
-            output_list.append('.')
-            output_list.append(c)
+            output.append(c)
 
-
-    return output_list
+    return ''.join(output)
 
 
 if __name__ == "__main__":
-    print(match("d.a.r*.e.n", "darrrrrrrrren"))
+    print(match("dar*en", "darren"))
+
+
+
