@@ -1,6 +1,6 @@
 # Darren Butler
 # Classes used in Thompson's construction
-
+import sys
 
 class State:
     """A state with one or two edges, all edges have a label."""
@@ -167,7 +167,4 @@ def concat(s):
 
 
 if __name__ == "__main__":
-    print(match("dar*en", "darren"))
-
-
-
+    print(match(sys.argv[1], sys.argv[2]))
