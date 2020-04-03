@@ -26,7 +26,7 @@ def shunt(infix):
     postfix = []  # Postfix regular expression
 
     # Operator precedence
-    precedence = {'*': 100, '.': 80, '|': 60, ')': 40, '(': 20}
+    precedence = {'*': 100, '+': 90, '.': 80, '|': 60, ')': 40, '(': 20}
 
     # Loop through input one character at a time
     while infix:
@@ -56,9 +56,9 @@ def shunt(infix):
 
 def compile_nfa(infix):
     """Return an NFA fragment representing the infix regular expression."""
-    #print("DEBUG - infix: " + infix)
+    print("DEBUG - infix: " + infix)
     postfix = shunt(infix)  # convert infix to postfix#
-    #print("DEBUG - postfix: " + postfix)
+    print("DEBUG - postfix: " + postfix)
     postfix = list(postfix)[::-1]  # convert postfix to stack of characters
     nfa_stack = []  # stack for NFA fragments
 
@@ -84,6 +84,11 @@ def compile_nfa(infix):
             accept = State()  # create new start and accept states
             start = State(edges=[frag.start, accept])
             frag.accept.edges = [frag.start, accept]  # point the arrows
+        elif c == '+':
+            frag = nfa_stack.pop()
+            accept = State()
+            start = frag.start
+            frag.accept.edges = ([frag.start, accept])
         else:
             accept = State()
             start = State(label=c, edges=[accept])
@@ -137,7 +142,7 @@ def concat(s):
     """This function takes a more user friendly regex (E.g: 'abc'), and
      inserts '.' concat operators where appropriate (E.g: 'a.b.c')."""
     my_list = list(s)[::-1]  # convert regex string to a reverse ordered list
-    special_characters = ['*', '|', '(', ')']  # characters with special rules
+    special_characters = ['*', '|', '(', ')', '+']  # characters with special rules
     output = []  # the compiler friendly regular expression (E.g: 'a.b.c')
 
     while my_list:  # iterate over the user friendly regex
@@ -147,12 +152,12 @@ def concat(s):
             output.append(c)
         elif c not in special_characters:  # if c is a normal character
             # if the previous character is non-special or *
-            if output[-1] not in special_characters or output[-1] == '*':
+            if output[-1] not in special_characters or output[-1] == '*' or output[-1] == '+':
                 output.append('.')  # preface c with a . operator
                 output.append(c)
             else:
                 output.append(c)
-        elif c == '*' or c == '|':
+        elif c == '*' or c == '|' or c == '+':
             output.append(c)
         elif c == '(':
             if output[-1] != '|' and output[-1] != '(' and output[-1] != '.':
