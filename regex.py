@@ -1,5 +1,5 @@
-# Darren Butler
-# Classes used in Thompson's construction
+# Darren Butler G00299944
+# Graph Theory Project: RegEx Engine 
 import sys
 
 
@@ -59,9 +59,9 @@ def shunt(infix):
 
 def compile_nfa(infix):
     """Return an NFA fragment representing the infix regular expression."""
-    print("DEBUG - infix: " + infix)
+    # print("DEBUG - infix: " + infix)
     postfix = shunt(infix)  # convert infix to postfix#
-    print("DEBUG - postfix: " + postfix)
+    # print("DEBUG - postfix: " + postfix)
     postfix = list(postfix)[::-1]  # convert postfix to stack of characters
     nfa_stack = []  # stack for NFA fragments
 
@@ -142,7 +142,6 @@ def match(regex, s):
 
 
 def concat(s):
-    # TODO: include reference to documentation which explains this function
     """This function takes a more user friendly regex (E.g: 'abc'), and
      inserts '.' concat operators where appropriate. (E.g: 'a.b.c')"""
     my_list = list(s)[::-1]  # convert regex string to a reverse ordered list
