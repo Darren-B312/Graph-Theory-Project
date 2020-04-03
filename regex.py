@@ -2,10 +2,13 @@
 # Classes used in Thompson's construction
 import sys
 
+
 class State:
     """A state with one or two edges, all edges have a label."""
-    def __init__(self, label=None, edges=[]):
+    def __init__(self, label=None, edges=None):
         # every state has 0, 1 or 2 edges from it
+        if edges is None:
+            edges = []
         self.edges = edges if edges else []
         self.label = label  # label for the arrows (null = epsilon)
 
@@ -137,12 +140,14 @@ def match(regex, s):
 
     return nfa.accept in current  # does NFA match the string s
 
-#TODO: include reference to documentation which explains this function more
+
 def concat(s):
+    # TODO: include reference to documentation which explains this function
     """This function takes a more user friendly regex (E.g: 'abc'), and
-     inserts '.' concat operators where appropriate (E.g: 'a.b.c')."""
+     inserts '.' concat operators where appropriate. (E.g: 'a.b.c')"""
     my_list = list(s)[::-1]  # convert regex string to a reverse ordered list
-    special_characters = ['*', '|', '(', ')', '+']  # characters with special rules
+    # characters with special rules
+    special_characters = ['*', '|', '(', ')', '+']
     output = []  # the compiler friendly regular expression (E.g: 'a.b.c')
 
     while my_list:  # iterate over the user friendly regex
@@ -151,8 +156,9 @@ def concat(s):
         if len(output) == 0:  # always append the first character from the list
             output.append(c)
         elif c not in special_characters:  # if c is a normal character
-            # if the previous character is non-special or *
-            if output[-1] not in special_characters or output[-1] == '*' or output[-1] == '+':
+            # if the previous character is non-special, *, or +
+            if output[-1] not in special_characters or output[-1] == '*' \
+                    or output[-1] == '+':
                 output.append('.')  # preface c with a . operator
                 output.append(c)
             else:
@@ -172,4 +178,4 @@ def concat(s):
 
 
 if __name__ == "__main__":
-    print(match(sys.argv[1], sys.argv[2]))
+    print("Match: " + str(match(sys.argv[1], sys.argv[2])))
