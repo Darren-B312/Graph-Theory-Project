@@ -198,8 +198,7 @@ def concat(s):
 
 
 def print_help():
-    print("usage: py regex.py [--help] [--match] [--ops] [--match --explain]")
-    print("\nThe above commands are used as follows:")
+    print("usage: py regex.py [--help] [--match] [--match --explain] [--ops]")
 
     print("\n\tmatch\t\t\tCheck if a string matches a regular expression")
     print("\t\t\t\t-This command requires two string arguments")
