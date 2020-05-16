@@ -103,7 +103,6 @@ def compile_nfa(infix):
         nfa_stack.append(new_fragment)  # push the new NFA to the NFA stack
 
     # the NFA stack should have exactly one NFA on it
-    print(len(nfa_stack))
     return nfa_stack.pop()
 
 
