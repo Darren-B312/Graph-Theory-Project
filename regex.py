@@ -176,5 +176,42 @@ def concat(s):
     return ''.join(output)
 
 
+def print_help():
+    print("usage: py regex.py [--help] [--match] [--ops]")
+    print("\nThe above commands are used as follows:")
+
+    print("\tmatch\t\tCheck if a string matches a regular expression")
+    print("\t\t\t-This command requires two string arguments")
+    print("\t\t\t-A regular expression string and a query string")
+    print("\t\t\t-Returns true/false if the query matches the regular "
+          "expression")
+
+    print("\n\tops\t\tDisplay a list of supported operators and their meaning")
+
+
+def print_ops():
+    print("Operator  - Name: Description")
+    print("*  - Kleene star: the preceding item will be matched zero, one"
+          " or many times")
+    print("+  - Or: the preceding item will be matched one or many times")
+    print(".  - Concatenate: this operator is automatically inserted "
+          "where necessary, the program will not work properly if you "
+          "insert it")
+    print("|  - Alternation: either the item before or after this "
+          "operator will be matched")
+    print("() - Grouping: parentheses can be used to apply precedence to "
+          "parts of a regular expression")
+
+
 if __name__ == "__main__":
-    print("Match: " + str(match(sys.argv[1], sys.argv[2])))
+    if len(sys.argv) > 1:  # check there are some args passed from cli
+        if sys.argv[1] == "--help":
+            print_help()
+        elif sys.argv[1] == "--match" and sys.argv[2] == "--explain":
+            print("this will print out the whole process")
+        elif sys.argv[1] == "--match":
+            print("match: " + str(match(sys.argv[2], sys.argv[3])))
+        elif sys.argv[1] == "--ops":
+            print_ops()
+        else:
+            print("unknown option: " + sys.argv[1])
