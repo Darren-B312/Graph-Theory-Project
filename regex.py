@@ -5,6 +5,7 @@ import sys
 
 class State:
     """A state with one or two edges, all edges have a label."""
+
     def __init__(self, label=None, edges=None):
         # every state has 0, 1 or 2 edges from it
         if edges is None:
@@ -15,6 +16,7 @@ class State:
 
 class Fragment:
     """An NFA fragment with a start & accept state."""
+
     def __init__(self, start, accept):
         self.start = start  # start state of NFA fragment
         self.accept = accept  # accept state of NFA fragment
@@ -116,6 +118,25 @@ def follow_e(state, current):
                 follow_e(x, current)  # RECURSION - follow all of their e's too
 
 
+def match_explain(regex, s):
+    temp = regex
+
+    print("regex: " + regex + "  # the regular expression as input")
+
+    regex = concat(regex)
+    print("concat(regex) -> " + regex + "  # concatenation operators "
+                                        "inserted")
+
+    regex = shunt(regex)
+    print("postfix(regex) -> " + regex + "  # expression converted "
+                                         "from infix to postfix")
+
+    print('\nquery string "' + s + '" match regular expression "' + temp +
+          '" : ' + str(match(temp, s)))
+
+
+
+
 def match(regex, s):
     """This function will return true if and only if
         the regular regex (fully) matches the string s"""
@@ -177,16 +198,22 @@ def concat(s):
 
 
 def print_help():
-    print("usage: py regex.py [--help] [--match] [--ops]")
+    print("usage: py regex.py [--help] [--match] [--ops] [--match --explain]")
     print("\nThe above commands are used as follows:")
 
-    print("\tmatch\t\tCheck if a string matches a regular expression")
-    print("\t\t\t-This command requires two string arguments")
-    print("\t\t\t-A regular expression string and a query string")
-    print("\t\t\t-Returns true/false if the query matches the regular "
+    print("\n\tmatch\t\t\tCheck if a string matches a regular expression")
+    print("\t\t\t\t-This command requires two string arguments")
+    print("\t\t\t\t-A regular expression string and a query string")
+    print("\t\t\t\t-Returns true/false if the query matches the regular "
           "expression")
+    print('\n\texample: py regex.py --match "a(bc+|d*)" abcccccc')
 
-    print("\n\tops\t\tDisplay a list of supported operators and their meaning")
+    print("\n\tmatch explain\t\tMore detailed version of --match")
+    print('\t\t\t\t-Prints out the more "under the hood" information')
+    print('\n\texample: py regex.py --match --explain "a(bc+|d*)" abcccccc')
+
+    print("\n\tops\t\t\tDisplay a list of supported operators and their "
+          "meaning")
 
 
 def print_ops():
@@ -207,10 +234,15 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:  # check there are some args passed from cli
         if sys.argv[1] == "--help":
             print_help()
-        elif sys.argv[1] == "--match" and sys.argv[2] == "--explain":
-            print("this will print out the whole process")
         elif sys.argv[1] == "--match":
-            print("match: " + str(match(sys.argv[2], sys.argv[3])))
+            if sys.argv[2] == "--explain":
+                match_explain(sys.argv[3], sys.argv[4])
+            else:
+                try:
+                    print("match: " + str(match(sys.argv[2], sys.argv[3])))
+                except:
+                    print("unknown option: " + sys.argv[1])
+
         elif sys.argv[1] == "--ops":
             print_ops()
         else:
