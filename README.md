@@ -7,13 +7,13 @@ Write a program in the Python programming language that can build a non-determin
 To use this RegEx engine you can clone and import regex.py into your python script then call the match(regex, text) function. This script can also be run directly from the command line:  
 
 ```sh
-$ python regex.py <RegEx> <text>
+$ python regex.py --match <RegEx> <text>
 Match: True/False
 ```
 
 E.g.
 ```sh
-$ python regex.py "a(bc+|d*)" abccccc
+$ python regex.py --match "a(bc+|d*)" abccccc
 Match: True
 ```
 note: it is important that your RegEx is between double quotes (E.g. "myRegEx") when using the command line. This is because some operators used in regular expressions like '|' have conflicts with the command line. It is not necessary to surround your text in quotes unless it has spaces.
