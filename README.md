@@ -32,7 +32,7 @@ The following examples should illustrate the modifications made to an input RegE
 
 >abc >>> concat() >>> a.b.c >>> shunt() >>> abc. . 
 
->ab*c|(a+bc) >>> concat() >>> a.b*.c|(a+.b.c) >>> shunt() >>> ab*c. .a+bc. .|
+>ab*c|(a+bc) >>> concat() >>> a.b*.c|(a+.b.c) >>> shunt() >>> abc. .a+bc. .|
 
 >(ab)+ >>> concat() >>> (a.b)+ >>> shunt() >>> ab.+
 
