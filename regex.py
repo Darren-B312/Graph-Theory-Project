@@ -203,11 +203,11 @@ def print_help():
     print("\t\t\t\t-A regular expression string and a query string")
     print("\t\t\t\t-Returns true/false if the query matches the regular "
           "expression")
-    print('\n\texample: py regex.py --match "a(bc+|d*)" abcccccc')
+    print('\n\texample: python regex.py --match "a(bc+|d*)" abcccccc')
 
     print("\n\tmatch explain\t\tMore detailed version of --match")
     print('\t\t\t\t-Prints out the more "under the hood" information')
-    print('\n\texample: py regex.py --match --explain "a(bc+|d*)" abcccccc')
+    print('\n\texample: python regex.py --match --explain "a(bc+|d*)" abcccccc')
 
     print("\n\tops\t\t\tDisplay a list of supported operators and their "
           "meaning")
