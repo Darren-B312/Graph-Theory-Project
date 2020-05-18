@@ -1,7 +1,8 @@
 # Darren Butler G00299944
 # Graph Theory Project: RegEx Engine 
 import sys
-
+import unittest
+import regex
 
 class State:
     """A state with one or two edges, all edges have a label."""
@@ -115,7 +116,7 @@ def follow_e(state, current):
         if state.label is None:  # if state is labelled by empty string
             # loop through the states pointed to by this state
             for x in state.edges:
-                follow_e(x, current)  # RECURSION - follow all of their e's too
+                follow_e(x, current)  # RECURSION - follow all of their e's
 
 
 def match_explain(regex, s):
@@ -207,7 +208,7 @@ def print_help():
 
     print("\n\tmatch explain\t\tMore detailed version of --match")
     print('\t\t\t\t-Prints out the more "under the hood" information')
-    print('\n\texample: python regex.py --match --explain "a(bc+|d*)" abcccccc')
+    print('\n\texample: python regex.py --match --explain "a(bc+|d*)" abcccc')
 
     print("\n\tops\t\t\tDisplay a list of supported operators and their "
           "meaning")
@@ -227,6 +228,75 @@ def print_ops():
           "parts of a regular expression")
 
 
+
+
+
+class TestRegex(unittest.TestCase):
+
+    def test_match(self):
+        # . concatenation
+        # should match one and only one of each of the characters in the
+        # order specified
+        self.assertEqual(regex.match("abc", "abc"), True)
+        self.assertEqual(regex.match("abc", "aaaaa"), False)
+        self.assertEqual(regex.match("abc", "abbc"), False)
+        self.assertEqual(regex.match("abc", "abcd"), False)
+        self.assertEqual(regex.match("abc", "a"), False)
+        self.assertEqual(regex.match("abc", ""), False)
+
+        # * Kleene star
+        # should match 0, 1 or many of the character
+        self.assertEqual(regex.match("a*", ""), True)
+        self.assertEqual(regex.match("a*", "a"), True)
+        self.assertEqual(regex.match("a*", "aaaaaaaaaaa"), True)
+        self.assertEqual(regex.match("a*", "b"), False)
+        self.assertEqual(regex.match("a*", "ab"), False)
+        self.assertEqual(regex.match("a*", "abc"), False)
+
+        # +
+        # should match 1 or more but not 0 of the character
+        self.assertEqual(regex.match("a+", ""), False)
+        self.assertEqual(regex.match("a+", "a"), True)
+        self.assertEqual(regex.match("a+", "aaaaaaa"), True)
+        self.assertEqual(regex.match("a+", "b"), False)
+        self.assertEqual(regex.match("a+", "ab"), False)
+        self.assertEqual(regex.match("a+", "aaaaaab"), False)
+
+        # | alternation
+        # should match either the character before or after but not both
+        self.assertEqual(regex.match("a|b", "a"), True)
+        self.assertEqual(regex.match("a|b", "b"), True)
+        self.assertEqual(regex.match("a|b", "ab"), False)
+        self.assertEqual(regex.match("a|b", "aaaaaa"), False)
+        self.assertEqual(regex.match("a|b", "bbbbbb"), False)
+        self.assertEqual(regex.match("a|b", "c"), False)
+
+        # () grouping
+        # can be used to apply precedence to a regular expression
+        self.assertEqual(regex.match("a(bc*|d+)", "ab"), True)
+        self.assertEqual(regex.match("a(bc*|d+)", "abc"), True)
+        self.assertEqual(regex.match("a(bc*|d+)", "abcccccc"), True)
+        self.assertEqual(regex.match("a(bc*|d+)", "ad"), True)
+        self.assertEqual(regex.match("a(bc*|d+)", "adddddddddd"), True)
+        self.assertEqual(regex.match("a(bc*|d+)", "bc"), False)
+
+
+    def test_concat(self):
+        self.assertEqual(regex.concat("abc"), "a.b.c")
+        self.assertEqual(regex.concat("abc|(a+bc)"), "a.b.c|(a+.b.c)")
+        self.assertEqual(regex.concat("(ab)+"), "(a.b)+")
+        self.assertEqual(regex.concat("a(bc|d*)"), "a.(b.c|d*)")
+
+    def test_shunt(self):
+        self.assertEqual(regex.shunt("a.b.c"), "abc..")
+        self.assertEqual(regex.shunt("a.b.c|(a+.b.c)"), "abc..a+bc..|")
+        self.assertEqual(regex.shunt("(a.b)+"), "ab.+")
+        self.assertEqual(regex.shunt("a.(b.c|d*)"), "abc.d*|.")
+
+    def runTests(self):
+        test_match(self)
+
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:  # check there are some args passed from cli
         if sys.argv[1] == "--help":
@@ -242,5 +312,8 @@ if __name__ == "__main__":
 
         elif sys.argv[1] == "--ops":
             print_ops()
+        elif sys.argv[1] == "--test":
+            print("now we're testing?")
+            runTests()
         else:
             print("unknown option: " + sys.argv[1])

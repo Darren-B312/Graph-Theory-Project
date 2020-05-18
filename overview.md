@@ -407,3 +407,28 @@ If the state is not already in the set, I.e. that state is not currently being v
 
 
 ## References <a name="references"/>
+In this section I will list and describe the resources that were referenced throughout this document. I will also point to and explain several other resources I used to achieve the learning outcomes of this module.
+
+The following are resources I specifically referenced in this document:
+
+ - [1] - [Regular Expression](https://en.wikipedia.org/wiki/Regular_expression)  - I am aware that wikipedia is not considered to be the most reliable academic resource, that said, for well understood topics, it often has succinct and eloquent ways to phrase or outline a concept.
+ - [2] - [Separation of Concerns](https://medium.com/machine-words/separation-of-concerns-1d735b703a60) - This is a great piece that describes the usefulness of this design pattern in developing code that is modular, reusable and also easier to understand.
+ - [3] - [Vertex (graph theory)](https://en.wikipedia.org/wiki/Vertex_%28graph_theory%29) - Like the previous wikipedia link, I used this to find concise phrases to describe states in graph theory, not as a foundation for my research.
+ - [4] - [# The Shunting Yard Algorithm](https://unnikked.ga/the-shunting-yard-algorithm-36191ea795d9) - This article breaks down the algorithm into a detailed step by step and includes useful diagrams for visual ease. It also details an implementation of the algorithm in Java.
+
+These are the references I found useful in achieving the learning outcomes of this module: 
+
+ - [Regex under the hood: Implementing a simple regex compiler in Go](https://medium.com/@phanindramoganti/regex-under-the-hood-implementing-a-simple-regex-compiler-in-go-ef2af5c6079) - This article is an incredibly detailed description of regex under the hood. In particular the diagram that displays how NFA fragments are combined together based on the operator. This resource also has code snippets of a regex implementation using the Go language. It is worth noting that the Go language was designed in part by Ken Thompson, the same person who developed Thompson's construction, the algorithm on which all of regex was built.
+ - [Programming Techniques: Regular expression search algorithm](https://dl.acm.org/doi/pdf/10.1145/363347.363387) -  Speaking of Ken Thompson, for curiosities sake, I had a glance through the 1968 publication of what would later be called Thomson's Construction. This is a fairly outdated piece that describes an implementation in IBM 7094 machine language. Still interesting to have a look through.
+ - [Regex Common Operators](http://web.mit.edu/gnu/doc/html/regex_3.html) - This is a simple document that describes the most common regular expression operators in detail.
+ - [PEP 8 -- Style Guide for Python Code](https://www.python.org/dev/peps/pep-0008/) - I mostly adhered to the style guidelines set out in this document for my own python scripts.
+ - [StackEdit](https://stackedit.io/) - Getting away from python and regular expressions, I used this online markdown file editor for both the readme and overview md files in this repository. It makes adding lists, links, images, code snippets very simple. It also allows you to edit the file and see the changes reflected in real time.
+ - [Python 3.8.3 documentation](https://docs.python.org/3/) - I used the python documentation throughout development of this project. Specifically for things like unit testing, command line args, and for list/set manipulation.
+ - Beyond the above resources, I also relied heavily on the lecture notes and video demonstrations. 
+
+I outlined the following video resources in the readme file of this repository, but I will mention them here again. I found the Computerphile YouTube channel has great videos discussing regular expressions which are both informative and entertaining. Specifically, they have a great video interview with Brian Kernighan, formerly of Bell Labs and a contemporary of Ken Thompson, in which he describes how the Unix 'grep' command came to be (the 're' stands for regular expression).
+
+ - [Regular Expressions - Computerphile](https://www.youtube.com/watch?v=528Jc3q86F8)
+ - [Using Regular Expressions - Computerphile](https://www.youtube.com/watch?v=6gddK-cOxYc)
+ - [RegEx Roman Numerals - Computerphile](https://www.youtube.com/watch?v=M3x5Z3iIoSU)
+ - [Where GREP Came From - Computerphile](https://www.youtube.com/watch?v=NTfOnGZUZDk)
