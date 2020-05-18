@@ -108,6 +108,8 @@ If you were to add any new functionality or refactor the main regex script in an
 ## Algorithms <a name="algorithms"/>
 In this section I will explain each of the core classes and functions used by the program. Most of the algorithms used in the code have been separated out into their own functions. This was done to adhere to the “separation of concerns” design principle [2]. This design pattern not only promotes code reusability, but also makes for much more readable code as each function has one and only one job. Python code is generally quite like pseudocode anyway, and can often be read by those unfamiliar with the language. As such I will show full code snippets of the functions and classes as they appear in code and give more detailed descriptions of how they work.
 
+<hr>
+
 Class: State
 
     class State:    
@@ -117,7 +119,9 @@ Class: State
 	        self.edges = edges if edges else []  
 	        self.label = label  # label for the arrows (null = epsilon)
 
-// explain the state class here
+This class is used to represent a node in a graph. Sometimes referred to as a vertex, it is “a fundamental unit of which graphs are formed” [3]. Each state has a label, this can be a normal character like ‘a’ or it can be None. In python “None” is the equivalent of “null” in other programming languages. A state with a None label represents ‘ε’, epsilon, the empty string. Each state also has a list of edges, this list is essentially a list of other states that are pointed to by this instance of the state class. If a state has no edges I.e. it has no arrows coming from it, it is an accept state.
+
+<hr>
 
 Class: Fragment
 
@@ -126,7 +130,9 @@ Class: Fragment
 	        self.start = start  
 			self.accept = accept
 
-// explain the fragment class here 
+This class is used to represent NFA fragments, smaller NFAs that are eventually combined to build one NFA. A fragment is essentially a combination of states. An instance of this class has a reference to two states, a start and an accept state. The graph is navigable by following the edges of the start state until you eventually come to the accept state. The simplest fragment will have two states, a start and an accept. More complex fragments will have many states between their start and accept state, though a reference to these middle states will not be directly held by the fragment instance.
+
+<hr>
 
 Function: match
 
@@ -149,7 +155,30 @@ Function: match
 
 	    return nfa.accept in current  
 
-// explain match function here
+This function is the first function called when checking a regex against a string. It takes two string arguments, the regular expression “regex” and a query string “s”. This function encompasses all the function calls needed to convert the input regex to an NFA and then return true or false whether the query string matches the pattern described by the regex.
+
+The first step is to call the concat() function and pass it the initially input regular expression. This function returns the same regular expression, but with ‘.’ concatenation characters inserted where necessary. The next step is to construct a NFA with the regex using the compile_nfa() function. This function returns an NFA which is stored in the “nfa” variable.
+
+The set “current” is initialized, this set will be used to keep track of which states are currently being visited. This is important because in an NFA, we can be in 0, 1 or many states simultaneously. 
+
+Next the follow_e function is called so that we immediately follow any empty string labels until we reach a non empty string state.
+
+Now we initialize an empty set to keep track of all the states that we have visited before called "previous".
+
+The function then enters a nested loop which does the following:
+
+    loop through the string one character at a time
+	    set our current states to be our previous states
+	    reset current to be an empty set
+	    loop through each state in previous
+		    if the state's label is not null 
+		    and 
+		    if the state's label is equal to the current character
+			    add the state at the end of the arrow to current
+	    
+Return true or false whether the nfa accept state is in the set of currently visited states after iterating over the whole string, there is only one accept state in our nfa, and if that state is one we have visited, then the NFA accepts the string.
+
+<hr>
 
 Function: concat
 
@@ -183,7 +212,37 @@ Function: concat
 
 	    return ''.join(output)
 
-// explain concat here
+This function takes the regex input by the user and inserts concatenation ‘.’ characters where necessary (E.g. abc would be converted to a.b.c). It works by popping characters off the regular expression. Using an admittedly cumbersome  if/elif/else statement, check the rules for the current and previous character, and decide whether to append the character to the output expression on it’s own, or by first appending a concatenation character. I built a spreadsheet with all the possible combinations that the current and previous character could be and what the outcome should be, you can see it [here](https://docs.google.com/spreadsheets/d/1f7rVm_3zULyT2payz8z5QDAsHX-VyFitZLPphWPj8Wc/edit?usp=sharing). In pseudocode, the function works like this:
+
+    convert the string to a reverse ordered list (my_list)
+    define characters that have special rulse (* | ( ) + )
+    initialize a new empty list (output)
+	
+	while my_list still has characters
+		pop a character c from the list
+		
+		if output list is empty
+			-> append c with no concatenation
+		if c is non-special character
+		and 
+			if last character added to output list is not a special character, * or +
+				-> append a concatenation character and then c to output
+			else 
+				append c with no concatenation
+		if c is *, | or +
+			-> append with no concatenation
+		if c is (
+			if previous character is not | and not ( and not .
+				-> append a concatenation character and then c to output
+			else
+				-> append c with no concatentation
+		else 
+			-> append c with no concatentation
+		
+		return output as a string
+
+
+<hr>
 
 Function: compile_nfa
 
@@ -227,7 +286,49 @@ Function: compile_nfa
 
 	    return nfa_stack.pop()
 
-// explain compile_nfa here
+This function takes a regular expression in infix notation and calls the shunt() function to convert it to postfix. It then iterates over the regex and constructs NFA fragments based on the rules of each special character. These fragments are eventually combined together to create one larger NFA which represents the overall regular expression. In pseudocode it looks something like this:
+
+    while there are still characters in the regex
+	    pop the next character off the regex
+	    if the character is:
+		    . // concatenation
+				pop two fragments off the nfa stack
+			    point the second fragments accept state to the start state of fragment 1
+			    
+		    | // alternation
+			    pop two fragments off the nfa stack
+			    create a new start and accept state
+			    point the old accept states at the new accept state
+			    have the new start state point to the old start states
+			    
+		    * // Kleene star
+			    pop one fragment off the stack
+			    create new start and accept states
+			    have the old start state edges point to the new start state
+			    change the old accept state edges so that they point at the new accept state and the old start state
+			    
+		    + // 1 or more operator
+				pop one fragment off the stack
+				create a new accept state
+				set the new start state to the old start state
+				set the old start state and the new accept state as the new accept state edges
+				 
+		else // a non-special character
+			create a new accept state with a null label
+			create a new start state with label c (the non-special character) and the edges of the accept state
+			add an edge from the s start state to the accept state
+			label the inital state with the character
+			
+		regardless of what character is read do the following: 
+			create a new fragment with the start and accept state from above
+			push the new fragment to the NFA stack
+Finally, once we have popped every character off the postfix regular expression, we return the only NFA left on the nfa_stack, which is our overall NFA which represents the regular expression that was originally passed to the function.
+
+I found the best way to learn how the different operators are converted into NFA fragments was to look at a visual representation like the one below and read through the code step by step to figure out how the states are being stitched together.
+
+![# Regex under the hood: Implementing a simple regex compiler in Go](https://miro.medium.com/max/1216/1*DY9OhfFJzJC_ocyZPTqmeQ.png)
+
+<hr>
 
 Function: shunt
 
@@ -260,7 +361,31 @@ Function: shunt
 
 	    return ''.join(postfix)
 
-// explain shunt here
+This function takes a regular expression in infix notation and returns the same regular expression in postfix notation. Postfix notation is a much better way to format a regular expression so that a computer can process the characters and operators. It is however not the notation that most people are used to, infix is a much more natural way for us to read mathematical expressions. As such we need some way to allow a regex be input in a human readable form and be converted to a more computer readable form. This algorithm was invented by Edsger Dijkstra [4]. It is named after a shunting yard, which is used to efficiently move train carriages on an off the track so they can be reordered. The algorithm works like this: 
+
+    convert the input string to a stack-like list, infix
+    initialize a stack for operators and the postfix expression
+    define special characters and give them a precedence
+	
+	while there are still characters left on infix
+		pop a character c
+		if c is (
+			-> append c to operator stack
+		if c is )
+			-> pop characters off the operator stack and append them to postfix until you find a '('
+			-> pop another character from the operator stack
+		if c is in the precedence set
+			while there are characters in the operator stack and the precedence of c is less than the precedence of the last character on the postfix stack
+			-> append c
+		else 
+			-> append c
+		
+	while there are still operators left
+		-> append them to postfix (all the special characters have been dealt with)
+	
+	return the postfix stack as a string
+
+<hr>
 
 Function: follow_e
 
@@ -270,8 +395,15 @@ Function: follow_e
 	        if state.label is None:  
 	            for x in state.edges:
 	                follow_e(x, current)  
-// explain follow_e here
 
+This function is used to navigate through the graph over any states with an empty string label (ε). The function takes two arguments, a state and a set of states that are currently being visited. In pseudocode, the algorithm follows these steps:
+
+    if state s is not in current ->  add s to current
+	    if the s's label is null (empty string)
+		    for each state pointed to by s
+			    follow_e(s, current) // recursive
+
+If the state is not already in the set, I.e. that state is not currently being visited, add it. If the state is labeled by the empty string ε I.e. it’s label is None (null) iterate over each state pointed to by the initial state and recursively follow all of those states empty labels.
 
 
 ## References <a name="references"/>
