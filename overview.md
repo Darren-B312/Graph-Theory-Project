@@ -23,7 +23,7 @@ This script can be imported to another python script and its functions used ther
 A regular expression, or regex for short, is an expression which describes a pattern of characters. The concept arose in the 1950s when the American mathematician Stephen Cole Kleene formalized the description of a regular language [1]. On first inspection, one might think this is not a particularly useful concept, however, think back to the last time you used “ctrl+f” in a web browser to quickly find a specific word or phrase in wall of text, or when you used the “find & replace” function of a word processing program to, in one fell swoop, fix your incorrect spelling of a word throughout the document. Beyond this, regular expressions are used in search engines and lexical analysis [1]. For a programmer, regular expressions are an incredibly useful idea when it comes to automating tasks, and overall timesaving.
 
 ## Run <a name="run"/>
-To use my code, you will need python3 and git installed on your machine. To do this will need to use the sudo (superuser do) command and the apt (Advanced Package Tool). Type the following commands into the terminal:
+To use my code, you will need python and git installed on your machine. To do this will need to use the sudo (superuser do) command and the apt (Advanced Package Tool). Type the following commands into the terminal:
 
     $ sudo apt-get install git
     $ sudo apt-get install python
@@ -407,14 +407,12 @@ If the state is not already in the set, I.e. that state is not currently being v
 
 
 ## References <a name="references"/>
-In this section I will list and describe the resources that were referenced throughout this document. I will also point to and explain several other resources I used to achieve the learning outcomes of this module.
-
 The following are resources I specifically referenced in this document:
 
  - [1] - [Regular Expression](https://en.wikipedia.org/wiki/Regular_expression)  - I am aware that wikipedia is not considered to be the most reliable academic resource, that said, for well understood topics, it often has succinct and eloquent ways to phrase or outline a concept.
  - [2] - [Separation of Concerns](https://medium.com/machine-words/separation-of-concerns-1d735b703a60) - This is a great piece that describes the usefulness of this design pattern in developing code that is modular, reusable and also easier to understand.
  - [3] - [Vertex (graph theory)](https://en.wikipedia.org/wiki/Vertex_%28graph_theory%29) - Like the previous wikipedia link, I used this to find concise phrases to describe states in graph theory, not as a foundation for my research.
- - [4] - [# The Shunting Yard Algorithm](https://unnikked.ga/the-shunting-yard-algorithm-36191ea795d9) - This article breaks down the algorithm into a detailed step by step and includes useful diagrams for visual ease. It also details an implementation of the algorithm in Java.
+ - [4] - [The Shunting Yard Algorithm](https://unnikked.ga/the-shunting-yard-algorithm-36191ea795d9) - This article breaks down the algorithm into a detailed step by step and includes useful diagrams for visual ease. It also details an implementation of the algorithm in Java.
 
 These are the references I found useful in achieving the learning outcomes of this module: 
 
