@@ -66,6 +66,8 @@ Lets start by running the program with the help command:
     $ python regex.py --help
 
 ![--help](https://imgur.com/QS0fkYg.png)
+---help will print a list of the commands that this program supports to the screen, as well as give a brief explanation of it's use and also outline examples.
+
 
 We could then use the --ops command to see a list of regular expression operators supported by this engine:
 
@@ -104,5 +106,172 @@ The test script can be run from the terminal like any other python script:
 If you were to add any new functionality or refactor the main regex script in any way, it would be very useful to rerun the test script to see if any of your changes had inadvertently broken the existing implementation.
 
 ## Algorithms <a name="algorithms"/>
+In this section I will explain each of the core classes and functions used by the program. Most of the algorithms used in the code have been separated out into their own functions. This was done to adhere to the “separation of concerns” design principle [2]. This design pattern not only promotes code reusability, but also makes for much more readable code as each function has one and only one job. Python code is generally quite like pseudocode anyway, and can often be read by those unfamiliar with the language. As such I will show full code snippets of the functions and classes as they appear in code and give more detailed descriptions of how they work.
+
+Class: State
+
+    class State:    
+	  def __init__(self, label=None, edges=None):  
+		  if edges is None:  
+	            edges = []  
+	        self.edges = edges if edges else []  
+	        self.label = label  # label for the arrows (null = epsilon)
+
+// explain the state class here
+
+Class: Fragment
+
+	class Fragment:  
+	    def __init__(self, start, accept):  
+	        self.start = start  
+			self.accept = accept
+
+// explain the fragment class here 
+
+Function: match
+
+    def match(regex, s):
+	    regex = concat(regex)
+	    nfa = compile_nfa(regex)
+
+	    current = set()
+	    follow_e(nfa.start, current)
+	    previous = set()
+
+	    for c in s:
+	        previous = current
+	        current = set()
+	        for state in previous:
+	            if state.label is not None:
+	                if state.label == c:
+	                    follow_e(state.edges[0],
+	                             current)
+
+	    return nfa.accept in current  
+
+// explain match function here
+
+Function: concat
+
+    def concat(s):
+	    my_list = list(s)[::-1]
+	    special_characters = ['*', '|', '(', ')', '+']
+	    output = []  
+
+	    while my_list:  
+	        c = my_list.pop()
+
+	        if len(output) == 0:  
+	            output.append(c)
+	        elif c not in special_characters:  
+	            if output[-1] not in special_characters or output[-1] == '*' \
+	                    or output[-1] == '+':
+	                output.append('.')
+	                output.append(c)
+	            else:
+	                output.append(c)
+	        elif c == '*' or c == '|' or c == '+':
+	            output.append(c)
+	        elif c == '(':
+	            if output[-1] != '|' and output[-1] != '(' and output[-1] != '.':
+	                output.append('.')
+	                output.append(c)
+	            else:
+	                output.append(c)
+	        else:
+	            output.append(c)
+
+	    return ''.join(output)
+
+// explain concat here
+
+Function: compile_nfa
+
+    def compile_nfa(infix):
+	    postfix = shunt(infix)  
+	    postfix = list(postfix)[::-1]  
+	    nfa_stack = []  
+
+	    while postfix:
+	        c = postfix.pop()  
+	        if c == '.':
+	            frag1 = nfa_stack.pop()  
+	            frag2 = nfa_stack.pop()
+	            frag2.accept.edges.append(frag1.start)
+	            start = frag2.start
+	            accept = frag1.accept
+	        elif c == '|':
+	            frag1 = nfa_stack.pop()  
+	            frag2 = nfa_stack.pop()
+	            accept = State()  
+	            start = State(edges=[frag2.start, frag1.start])
+	            frag2.accept.edges.append(
+	                accept)  
+	            frag1.accept.edges.append(accept)
+	        elif c == '*':
+	            frag = nfa_stack.pop()  
+	            accept = State()  
+	            start = State(edges=[frag.start, accept])
+	            frag.accept.edges = [frag.start, accept]  
+	        elif c == '+':
+	            frag = nfa_stack.pop()
+	            accept = State()
+	            start = frag.start
+	            frag.accept.edges = ([frag.start, accept])
+	        else:
+	            accept = State()
+	            start = State(label=c, edges=[accept])
+
+	        new_fragment = Fragment(start, accept)
+	        nfa_stack.append(new_fragment)  
+
+	    return nfa_stack.pop()
+
+// explain compile_nfa here
+
+Function: shunt
+
+    def shunt(infix):
+	    infix = list(infix)[::-1]  
+
+	    operators = []  
+	    postfix = []  
+
+	    precedence = {'*': 100, '+': 90, '.': 80, '|': 60, ')': 40, '(': 20}
+
+	    while infix:
+	        c = infix.pop()  
+	        if c == '(':
+	            operators.append(c)
+	        elif c == ')':
+	            while operators[-1] != '(':
+	                postfix.append(operators.pop())
+
+	            operators.pop()
+	        elif c in precedence:
+	            while operators and precedence[c] < precedence[operators[-1]]:
+	                postfix.append(operators.pop())
+	            operators.append(c)
+	        else:
+	            postfix.append(c)
+
+	    while operators:
+	        postfix.append(operators.pop())
+
+	    return ''.join(postfix)
+
+// explain shunt here
+
+Function: follow_e
+
+    def follow_e(state, current):
+	    if state not in current: 
+	        current.add(state)
+	        if state.label is None:  
+	            for x in state.edges:
+	                follow_e(x, current)  
+// explain follow_e here
+
+
 
 ## References <a name="references"/>
